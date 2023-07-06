@@ -17,24 +17,23 @@ export class AWSSchedulerFetcherService implements SchedulerSender {
     const uniqueId = uuidv4();
     const scheduleDate = new Date(date);
     const ruleName = `${type}_${name}_${uniqueId}`;
-    const cronExpression = `0 9 ${getDate(scheduleDate)} ${getMonth(scheduleDate) + 1} ? *`;
+    const cronExpression = `* * * * ? *`;
 
     const message = await this.eventService.processEvent(name, name, date, type)
     const rule = {
       Name: ruleName,
       ScheduleExpression: `cron(${cronExpression})`,
       State: "ENABLED",
-      Description: `Send birthday email to user ${name} at 9 AM in their timezone`,
+      Description: `Sending ${type} to email ${name} at 9 AM in their timezone`,
       Target: {
-        Id: "birthday-email-target",
-        Arn: '',
+        Id: uniqueId,
+        Arn: 'xxx',
         Input: JSON.stringify({ 
-            first_name: name,
-            last_name: name,
+            name: name,
             type,
             message
          }),
-        RoleArn: ''
+        RoleArn: 'xxxx'
       },
       ScheduleExpressionTimezone: timezone,
       FlexibleTimeWindow: {
