@@ -15,31 +15,36 @@ export class AWSSchedulerFetcherService implements SchedulerSender {
 
   async schedule(name: string, type: EVENT_TYPE, date: Date, timezone: string) {
     const uniqueId = uuidv4();
-    const scheduleDate = new Date(date);
     const ruleName = `${type}_${name}_${uniqueId}`;
-    const cronExpression = `* * * * ? *`;
+    const cronExpression = `0 9 ${getDate(date)} ${getMonth(date) + 1} ? *`;
 
     const message = await this.eventService.processEvent(name, name, date, type)
     const rule = {
       Name: ruleName,
       ScheduleExpression: `cron(${cronExpression})`,
       State: "ENABLED",
-      Description: `Sending ${type} to email ${name} at 9 AM in their timezone`,
+      Description: `Send ${type} email to user ${name} at 9 AM in their timezone`,
       Target: {
         Id: uniqueId,
-        Arn: 'xxx',
+        Arn: "arn:aws:events:us-east-1:452999660372:event-bus/default",
+        EventBridgeParameters: {
+          DetailType: "email",
+          Source: "myapp.erin",
+        },
         Input: JSON.stringify({ 
-            name: name,
-            type,
-            message
+            first_name: name,
+            last_name: name,
+            type: type,
+            message: message
          }),
-        RoleArn: 'xxxx'
+        RoleArn: 'arn:aws:iam::452999660372:role/EventScheduleRole'
       },
       ScheduleExpressionTimezone: timezone,
       FlexibleTimeWindow: {
         Mode: "OFF"
       }
     };
+  
   
     try {
       const command = new CreateScheduleCommand(rule);
