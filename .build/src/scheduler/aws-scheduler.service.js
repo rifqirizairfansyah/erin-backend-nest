@@ -38,7 +38,7 @@ let AWSSchedulerFetcherService = exports.AWSSchedulerFetcherService = class AWSS
                     type,
                     message
                 }),
-                RoleArn: 'arn:aws:iam::452999660372:role/EventSchedullerEmail'
+                RoleArn: 'arn:aws:iam::452999660372:role/EventScheduleRole'
             },
             ScheduleExpressionTimezone: timezone,
             FlexibleTimeWindow: {
